@@ -162,15 +162,13 @@ static Janet termbox_change_cell(int32_t argc, Janet *argv) {
     int32_t y = janet_getinteger(argv, 1);
 
     const uint8_t *chu = janet_getstring(argv, 2);
-    const char *ch = (const char *)chu;
-    if (strlen(ch) != 1) {
-        janet_panicf("expect one character, got \"%s\"", ch);
-    }
+    uint32_t ch;
+    tb_utf8_char_to_unicode(&ch, (char *)chu);
 
     uint16_t fg = janet_optinteger(argv, argc, 3, TB_DEFAULT);
     uint16_t bg = janet_optinteger(argv, argc, 4, TB_DEFAULT);
 
-    tb_change_cell(x, y, ch[0], fg, bg);
+    tb_change_cell(x, y, ch, fg, bg);
 
     return janet_wrap_nil();
 }
