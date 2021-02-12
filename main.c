@@ -9,39 +9,6 @@
         return janet_wrap_nil();                   \
     }                                              \
 
-struct named_colour {
-    const char *name;
-    uint16_t colour;
-};
-
-#define NUM_COLOURS 8
-const struct named_colour named_colours[] = {
-    {"default", TB_DEFAULT},
-    {"black",   TB_BLACK},
-    {"red",     TB_RED},
-    {"green",   TB_GREEN},
-    {"yellow",  TB_YELLOW},
-    {"blue",    TB_BLUE},
-    {"magenta", TB_MAGENTA},
-    {"cyan",    TB_CYAN},
-    {"white",   TB_WHITE}
-};
-
-static uint16_t kw_to_colour(int32_t argc, const Janet *argv, int32_t n) {
-    const uint8_t *nameu = janet_optkeyword(argv, argc, n, NULL);
-    if (nameu == NULL) {
-        return TB_DEFAULT;
-    }
-    const char *name = (const char *)nameu;
-    for (int i = 0; i < NUM_COLOURS; i++) {
-        if (strcmp(named_colours[i].name, name) == 0) {
-            return named_colours[i].colour;
-        }
-    }
-    tb_shutdown();
-    janet_panicf("unknow colour %s", name);
-}
-
 static Janet get_key_str(uint16_t key) {
     switch (key) {
         case TB_KEY_F1:
@@ -127,7 +94,7 @@ static Janet get_key_str(uint16_t key) {
         case TB_KEY_CTRL_L:
             return janet_cstringv("ctrl-l");
         case TB_KEY_ENTER:
-            return janet_cstringv("ctrl-enter");
+            return janet_cstringv("enter");
         case TB_KEY_CTRL_N:
             return janet_cstringv("ctrl-n");
         case TB_KEY_CTRL_O:
@@ -173,6 +140,9 @@ static Janet get_key_str(uint16_t key) {
     }
 }
 
+//
+// termbox API functions
+//
 static Janet termbox_init(int32_t argc, Janet *argv) {
     (void) argv;
     janet_fixarity(argc, 0);
@@ -197,8 +167,8 @@ static Janet termbox_change_cell(int32_t argc, Janet *argv) {
         janet_panicf("expect one character, got \"%s\"", ch);
     }
 
-    uint16_t fg = kw_to_colour(argc, argv, 3);
-    uint16_t bg = kw_to_colour(argc, argv, 4);
+    uint16_t fg = janet_optinteger(argv, argc, 3, TB_DEFAULT);
+    uint16_t bg = janet_optinteger(argv, argc, 4, TB_DEFAULT);
 
     tb_change_cell(x, y, ch[0], fg, bg);
 
@@ -212,7 +182,7 @@ static Janet termbox_poll_event(int32_t argc, Janet *argv) {
     struct tb_event ev;
     tb_poll_event(&ev);
 
-    JanetKV *jt = janet_struct_begin(2);
+    JanetKV *jt = janet_struct_begin(3);
     Janet type;
     switch (ev.type) {
         case TB_EVENT_KEY:
@@ -229,9 +199,13 @@ static Janet termbox_poll_event(int32_t argc, Janet *argv) {
             break;
         case TB_EVENT_RESIZE:
             type = janet_cstringv("resize");
+            janet_struct_put(jt, janet_ckeywordv("w"), janet_wrap_integer(ev.w));
+            janet_struct_put(jt, janet_ckeywordv("h"), janet_wrap_integer(ev.h));
             break;
         case TB_EVENT_MOUSE:
             type = janet_cstringv("mouse");
+            janet_struct_put(jt, janet_ckeywordv("x"), janet_wrap_integer(ev.x));
+            janet_struct_put(jt, janet_ckeywordv("y"), janet_wrap_integer(ev.y));
             break;
     }
     janet_struct_put(jt, janet_ckeywordv("type"), type);
@@ -239,17 +213,39 @@ static Janet termbox_poll_event(int32_t argc, Janet *argv) {
     return janet_wrap_struct(janet_struct_end(jt));
 }
 
+static Janet termbox_set_cursor(int32_t argc, Janet *argv) {
+    janet_fixarity(argc, 2);
+    uint32_t cx = janet_getinteger(argv, 0);
+    uint32_t cy = janet_getinteger(argv, 1);
+    tb_set_cursor(cx, cy);
+    return janet_wrap_nil();
+}
+
+static Janet termbox_width(int32_t argc, Janet *argv) {
+    (void) argv;
+    janet_fixarity(argc, 0);
+    return janet_wrap_integer(tb_width());
+}
+static Janet termbox_height(int32_t argc, Janet *argv) {
+    (void) argv;
+    janet_fixarity(argc, 0);
+    return janet_wrap_integer(tb_height());
+}
+
 create_no_arg_func(termbox_shutdown, tb_shutdown);
 create_no_arg_func(termbox_clear, tb_clear);
 create_no_arg_func(termbox_present, tb_present);
 
 static const JanetReg cfuns[] = {
-    {"init", termbox_init, ""},
-    {"shutdown", termbox_shutdown, ""},
-    {"clear", termbox_clear, ""},
-    {"present", termbox_present, ""},
+    {"init",        termbox_init, ""},
+    {"shutdown",    termbox_shutdown, ""},
+    {"clear",       termbox_clear, ""},
+    {"present",     termbox_present, ""},
     {"change-cell", termbox_change_cell, ""},
-    {"poll-event", termbox_poll_event, ""},
+    {"poll-event",  termbox_poll_event, ""},
+    {"set-cursor",  termbox_set_cursor, ""},
+    {"width",       termbox_width, ""},
+    {"height",      termbox_height, ""},
     {NULL, NULL, NULL}
 };
 

@@ -1,37 +1,39 @@
-(import ../build/termbox)
+(import ../termbox :as tb)
 
-(defn draw-string [str x y]
-  (loop [i :range [0 (length str)]]
-    (termbox/change-cell (+ x i) y (string/from-bytes (str i)))))
+(defn draw-string [x y str]
+  (loop [[idx chr] :pairs str]
+    (tb/change-cell (+ x idx) y (string/from-bytes chr))))
 
-(defn box [title x y w h]
-  (loop [cx :range [x (+ x w)]]
-    (termbox/change-cell cx y "-")
-    (termbox/change-cell cx (+ y h) "-"))
-  (loop [cy :range [y (+ y h)]]
-    (termbox/change-cell x cy "|")
-    (termbox/change-cell (+ x w) cy "|"))
-  (termbox/change-cell x y "+")
-  (termbox/change-cell (+ x w) y "+")
-  (termbox/change-cell x (+ y h) "+")
-  (termbox/change-cell (+ x w) (+ y h) "+")
-  (draw-string title (+ x 1) y))
+(defn clear-line [y]
+  (loop [x :range [0 (tb/width)]]
+    (tb/change-cell x y " ")))
 
-(termbox/init)
-(termbox/clear)
+(defn draw-colours [x y]
+  (loop [cx :range [x (+ x 18) 2]
+         cy :range [y (+ y 9)]
+         :let [fg (mod (- cx x) 8)
+               bg (mod (- cy y) 8)]]
+    (tb/change-cell cx cy "a" fg bg)
+    (tb/change-cell (+ cx 1) cy "a" fg bg)))
 
-(box "bocs" 5 5 20 10)
-(termbox/present)
+(defn main [&arg]
+  (tb/init)
+  (tb/clear)
 
-(var content "")
-(while true
-  (def ev (termbox/poll-event))
-  (case (ev :type)
-    "key" (case (ev :key)
-            "esc" (break)
-            "space" (set content (string content " "))
-            nil (set content (string content (ev :ch)))))
-  (draw-string content 6 6)
-  (termbox/present))
+  (draw-string 0 0 "type to see events. ctrl-c to quit")
+  (draw-colours 5 5)
+  (tb/present)
 
-(termbox/shutdown)
+  (while true
+    (def ev (tb/poll-event))
+
+    (clear-line 1)
+    (draw-string 0 1 (string/format "%j" ev))
+    (draw-colours 5 5)
+
+    (case (ev :type)
+      "key" (case (ev :key)
+              "ctrl-c" (break)))
+    (tb/present))
+
+  (tb/shutdown))

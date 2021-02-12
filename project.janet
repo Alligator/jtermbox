@@ -2,8 +2,11 @@
   :name "termbox"
   :description "termbox bindings for janet")
 
+(declare-source
+  :source @["termbox.janet"])
+
 (declare-native
-  :name "termbox"
+  :name "_termbox"
   :source @["termbox.c" "utf8.c" "main.c"])
 
 (phony "get-termbox" []
