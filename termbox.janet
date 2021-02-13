@@ -1,4 +1,4 @@
-(import ./build/_termbox :prefix "" :export true)
+(import _termbox :prefix "" :export true)
 
 (def- color-map
   @{:default    0
@@ -14,7 +14,13 @@
     :underline  0x0200
     :reverse    0x0400})
 
-(defn color [& kws]
+(defn color
+  ``create a termbox colour. accepts a colour followed by any number of modifiers.
+
+  valid keywords are :default :black :red :green :yellow :blue :magenta :cyan
+  :white :bold :underline :reverse
+  ``
+  [& kws]
   (apply bor
          (map (fn [kw]
                 (if (nil? (color-map kw))

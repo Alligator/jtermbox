@@ -235,15 +235,51 @@ create_no_arg_func(termbox_clear, tb_clear);
 create_no_arg_func(termbox_present, tb_present);
 
 static const JanetReg cfuns[] = {
-    {"init",        termbox_init, ""},
-    {"shutdown",    termbox_shutdown, ""},
-    {"clear",       termbox_clear, ""},
-    {"present",     termbox_present, ""},
-    {"change-cell", termbox_change_cell, ""},
-    {"poll-event",  termbox_poll_event, ""},
-    {"set-cursor",  termbox_set_cursor, ""},
-    {"width",       termbox_width, ""},
-    {"height",      termbox_height, ""},
+    {"init",        termbox_init,
+        "(termbox/init)\n\n"
+        "initialize the termbox library.\n"
+        "must be called before any other functions."
+    },
+    {"shutdown",    termbox_shutdown,
+        "(termbox/shutdown)\n\n"
+        "restore the terminal to it's initial state."
+    },
+    {"clear",       termbox_clear,
+        "(termbox/clear)\n\n"
+        "clear the internal terminal buffer."
+    },
+    {"present",     termbox_present,
+        "(termbox/present)\n\n"
+        "sync the internal buffer with the terminal."
+    },
+    {"change-cell", termbox_change_cell,
+        "(termbox/change-cell x y ch &opt fg bg)\n\n"
+        "change a cell in the internal bufffer at the specified position.\n"
+        "fg and bg default to (tb/color :default)."
+    },
+    {"poll-event",  termbox_poll_event,
+        "(termbox/poll-event)\n\n"
+        "wait for an event and return it.\n\n"
+        "there are three types of event.\n"
+        "key events, which contain either a character or a key name:\n\n"
+        "@{:type \"key\" :ch \"a\" :key \"arrow-down\"}\n\n"
+        "resize events, which contain a width and height:\n\n"
+        "@{:type \"resize\" :w 640 :h 480}\n\n"
+        "and mouse events, which contain x and y co-ordinates:\n\n"
+        "@{:type \"mouse\" :x 20 :y 60}"
+    },
+    {"set-cursor",  termbox_set_cursor,
+        "(termbox/set-cursor cx cy)\n\n"
+        "set the position of the cursor. pass -1 for both cx and cy to hide the cursor."
+    },
+    {"width",       termbox_width,
+        "(termbox/width)\n\n"
+        "return the width of the terminal"
+    },
+    {"height",      termbox_height,
+        "(termbox/height)\n\n"
+        "return the height of the terminal"
+    },
     {NULL, NULL, NULL}
 };
 
