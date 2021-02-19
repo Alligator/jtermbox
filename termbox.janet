@@ -20,7 +20,8 @@
   valid keywords are :default :black :red :green :yellow :blue :magenta :cyan
   :white :bold :underline :reverse
 
-  in 256 color, 216 color and grayscale modes, use numbers rather then keywords to select colors.
+  in 256 color, 216 color and grayscale modes, use numbers rather than keywords
+  to select colors.
   ``
   [& kws]
   (apply bor
