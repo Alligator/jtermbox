@@ -8,7 +8,8 @@
 (declare-native
   :name "_termbox"
   :source @["termbox.c" "utf8.c" "main.c"]
-  :cflags [;default-cflags "-D_XOPEN_SOURCE"])
+  # ternbox causes no unused result warnings with -Wall, hide them
+  :cflags [;default-cflags "-std=gnu99" "-D_XOPEN_SOURCE" "-Wno-unused-result"])
 
 (phony "get-termbox" []
        (os/shell "curl -LO https://raw.githubusercontent.com/termbox/termbox/master/termbox.c")
