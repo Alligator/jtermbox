@@ -15,15 +15,18 @@
     :reverse    0x0400})
 
 (defn color
-  ``create a termbox colour. accepts a colour followed by any number of modifiers.
+  ``create a termbox color. accepts a color followed by any number of modifiers.
 
   valid keywords are :default :black :red :green :yellow :blue :magenta :cyan
   :white :bold :underline :reverse
+
+  in 256 color, 216 color and grayscale modes, use numbers rather then keywords to select colors.
   ``
   [& kws]
   (apply bor
          (map (fn [kw]
-                (if (nil? (color-map kw))
-                  (errorf "unknown color/attribute %v" kw))
-                (color-map kw))
+                (cond
+                  (int? kw) kw
+                  (nil? (color-map kw)) (errorf "unknown color/attribute %v" kw)
+                  (color-map kw)))
               kws)))

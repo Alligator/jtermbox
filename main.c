@@ -244,6 +244,52 @@ static Janet termbox_set_clear_attributes(int32_t argc, Janet *argv) {
     return janet_wrap_nil();
 }
 
+static int kw_to_tb_mode(JanetKeyword mode_kw) {
+    if (janet_cstrcmp(mode_kw, "normal") == 0) {
+        return TB_OUTPUT_NORMAL;
+    } else if (janet_cstrcmp(mode_kw, "256") == 0) {
+        return TB_OUTPUT_256;
+    } else if (janet_cstrcmp(mode_kw, "216") == 0) {
+        return TB_OUTPUT_216;
+    } else if (janet_cstrcmp(mode_kw, "grayscale") == 0) {
+        return TB_OUTPUT_GRAYSCALE;
+    } else if (janet_cstrcmp(mode_kw, "current") == 0) {
+        return TB_OUTPUT_CURRENT;
+    } else {
+        janet_panicf("unrecognized mode %s, expected one of :normal :256 :216 :grayscale :current\n", mode_kw);
+    }
+}
+
+static Janet kw_from_tb_mode(int mode) {
+    switch (mode) {
+        case TB_OUTPUT_NORMAL:
+            return janet_ckeywordv("normal");
+        case TB_OUTPUT_256:
+            return janet_ckeywordv("256");
+        case TB_OUTPUT_216:
+            return janet_ckeywordv("216");
+        case TB_OUTPUT_GRAYSCALE:
+            return janet_ckeywordv("grayscale");
+        default:
+            return janet_wrap_nil();
+    }
+}
+
+// int tb_select_output_mode(int mode);
+static Janet termbox_select_output_mode(int32_t argc, Janet *argv) {
+    janet_fixarity(argc, 1);
+    JanetKeyword mode_kw = janet_getkeyword(argv, 0);
+
+    int mode = kw_to_tb_mode(mode_kw);
+    int result = tb_select_output_mode(mode);
+
+    if (mode == TB_OUTPUT_CURRENT) {
+        return kw_from_tb_mode(result);
+    }
+
+    return janet_wrap_nil();
+}
+
 create_no_arg_func(termbox_shutdown, tb_shutdown);
 create_no_arg_func(termbox_clear, tb_clear);
 create_no_arg_func(termbox_present, tb_present);
@@ -297,6 +343,12 @@ static const JanetReg cfuns[] = {
     {"height",      termbox_height,
         "(termbox/height)\n\n"
         "return the height of the terminal"
+    },
+    {"select-output-mode",      termbox_select_output_mode,
+        "(termbox/selet-output-mode)\n\n"
+        "set the output mode.\n"
+        "valid modes are :normal :256 :216 :grayscale and :current.\n"
+        "when called with :current, will return the current mode as a keyword."
     },
     {NULL, NULL, NULL}
 };
