@@ -296,33 +296,33 @@ create_no_arg_func(termbox_present, tb_present);
 
 static const JanetReg cfuns[] = {
     {"init",        termbox_init,
-        "(termbox/init)\n\n"
+        "(init)\n\n"
         "initialize the termbox library.\n"
         "must be called before any other functions."
     },
     {"shutdown",    termbox_shutdown,
-        "(termbox/shutdown)\n\n"
+        "(shutdown)\n\n"
         "restore the terminal to it's initial state."
     },
     {"clear",       termbox_clear,
-        "(termbox/clear)\n\n"
+        "(clear)\n\n"
         "clear the internal terminal buffer."
     },
     {"set-clear-attributes", termbox_set_clear_attributes,
-        "(termbox/set-clear-attributes fg bg)\n\n"
-        "set the attributes used when clearing the screen with termbox/clear."
+        "(set-clear-attributes fg bg)\n\n"
+        "set the attributes used when clearing the screen with clear."
     },
     {"present",     termbox_present,
-        "(termbox/present)\n\n"
+        "(present)\n\n"
         "sync the internal buffer with the terminal."
     },
     {"change-cell", termbox_change_cell,
-        "(termbox/change-cell x y ch &opt fg bg)\n\n"
+        "(change-cell x y ch &opt fg bg)\n\n"
         "change a cell in the internal bufffer at the specified position.\n"
         "fg and bg default to (tb/color :default)."
     },
     {"poll-event",  termbox_poll_event,
-        "(termbox/poll-event)\n\n"
+        "(poll-event)\n\n"
         "wait for an event and return it.\n\n"
         "there are three types of event.\n"
         "key events, which contain either a character or a key name:\n\n"
@@ -333,19 +333,19 @@ static const JanetReg cfuns[] = {
         "@{:type \"mouse\" :x 20 :y 60}"
     },
     {"set-cursor",  termbox_set_cursor,
-        "(termbox/set-cursor cx cy)\n\n"
+        "(set-cursor cx cy)\n\n"
         "set the position of the cursor. pass -1 for both cx and cy to hide the cursor."
     },
     {"width",       termbox_width,
-        "(termbox/width)\n\n"
+        "(width)\n\n"
         "return the width of the terminal"
     },
     {"height",      termbox_height,
-        "(termbox/height)\n\n"
+        "(height)\n\n"
         "return the height of the terminal"
     },
     {"select-output-mode",      termbox_select_output_mode,
-        "(termbox/selet-output-mode)\n\n"
+        "(selet-output-mode)\n\n"
         "set the output mode.\n"
         "valid modes are :normal :256 :216 :grayscale and :current.\n"
         "when called with :current, will return the current mode as a keyword."
