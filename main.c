@@ -235,6 +235,15 @@ static Janet termbox_height(int32_t argc, Janet *argv) {
     return janet_wrap_integer(tb_height());
 }
 
+// void tb_set_clear_attributes(uint16_t fg, uint16_t bg);
+static Janet termbox_set_clear_attributes(int32_t argc, Janet *argv) {
+    janet_fixarity(argc, 2);
+    uint16_t fg = janet_getinteger(argv, 0);
+    uint16_t bg = janet_getinteger(argv, 1);
+    tb_set_clear_attributes(fg, bg);
+    return janet_wrap_nil();
+}
+
 create_no_arg_func(termbox_shutdown, tb_shutdown);
 create_no_arg_func(termbox_clear, tb_clear);
 create_no_arg_func(termbox_present, tb_present);
@@ -252,6 +261,10 @@ static const JanetReg cfuns[] = {
     {"clear",       termbox_clear,
         "(termbox/clear)\n\n"
         "clear the internal terminal buffer."
+    },
+    {"set-clear-attributes", termbox_set_clear_attributes,
+        "(termbox/set-clear-attributes fg bg)\n\n"
+        "set the attributes used when clearing the screen with termbox/clear."
     },
     {"present",     termbox_present,
         "(termbox/present)\n\n"
