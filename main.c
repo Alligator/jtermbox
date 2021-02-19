@@ -173,6 +173,7 @@ static Janet termbox_change_cell(int32_t argc, Janet *argv) {
     return janet_wrap_nil();
 }
 
+// int tb_poll_event(struct tb_event *event);
 static Janet termbox_poll_event(int32_t argc, Janet *argv) {
     (void) argv;
     janet_fixarity(argc, 0);
@@ -211,6 +212,7 @@ static Janet termbox_poll_event(int32_t argc, Janet *argv) {
     return janet_wrap_struct(janet_struct_end(jt));
 }
 
+// void tb_set_cursor(int cx, int cy);
 static Janet termbox_set_cursor(int32_t argc, Janet *argv) {
     janet_fixarity(argc, 2);
     uint32_t cx = janet_getinteger(argv, 0);
@@ -219,11 +221,14 @@ static Janet termbox_set_cursor(int32_t argc, Janet *argv) {
     return janet_wrap_nil();
 }
 
+// int tb_width(void);
 static Janet termbox_width(int32_t argc, Janet *argv) {
     (void) argv;
     janet_fixarity(argc, 0);
     return janet_wrap_integer(tb_width());
 }
+
+// int tb_height(void);
 static Janet termbox_height(int32_t argc, Janet *argv) {
     (void) argv;
     janet_fixarity(argc, 0);
