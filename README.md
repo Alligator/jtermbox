@@ -73,17 +73,16 @@ It sticks to the termbox API as much as possible, with keywords used in place of
 
 (termbox/poll-event)
   wait for an event and return it.
-  
   there are three types of event.
   
   key events, which contain either a character or a key name:
-  @{:type "key" :ch "a" :key "arrow-down"}
+  @{:type "key" :ch "a" :key "arrow-down" :mod "alt"}
   
   resize events, which contain a width and height:
   @{:type "resize" :w 640 :h 480}
   
   and mouse events, which contain x and y co-ordinates:
-  @{:type "mouse" :x 20 :y 60}
+  @{:type "mouse" :x 20 :y 60 :mod "motion"}
   
 (termbox/peek-event timeout)
   wait for an event up to timeout milliseconds.

@@ -174,7 +174,7 @@ static Janet termbox_change_cell(int32_t argc, Janet *argv) {
 }
 
 static Janet create_tb_event_struct(struct tb_event ev) {
-    JanetKV *jt = janet_struct_begin(3);
+    JanetKV *jt = janet_struct_begin(4);
     Janet type;
     switch (ev.type) {
         case TB_EVENT_KEY:
@@ -200,8 +200,19 @@ static Janet create_tb_event_struct(struct tb_event ev) {
             janet_struct_put(jt, janet_ckeywordv("y"), janet_wrap_integer(ev.y));
             break;
     }
-    janet_struct_put(jt, janet_ckeywordv("type"), type);
 
+    if (ev.mod) {
+        switch (ev.mod) {
+            case TB_MOD_ALT:
+                janet_struct_put(jt, janet_ckeywordv("mod"), janet_cstringv("alt"));
+                break;
+            case TB_MOD_MOTION:
+                janet_struct_put(jt, janet_ckeywordv("mod"), janet_cstringv("motion"));
+                break;
+        }
+    }
+
+    janet_struct_put(jt, janet_ckeywordv("type"), type);
     return janet_wrap_struct(janet_struct_end(jt));
 }
 
@@ -390,14 +401,14 @@ static const JanetReg cfuns[] = {
     },
     {"poll-event",  termbox_poll_event,
         "(poll-event)\n\n"
-        "wait for an event and return it.\n\n"
-        "there are three types of event.\n"
-        "key events, which contain either a character or a key name:\n\n"
-        "@{:type \"key\" :ch \"a\" :key \"arrow-down\"}\n\n"
-        "resize events, which contain a width and height:\n\n"
+        "wait for an event and return it.\n"
+        "there are three types of event.\n\n"
+        "key events, which contain either a character or a key name:\n"
+        "@{:type \"key\" :ch \"a\" :key \"arrow-down\" :mod \"alt\"}\n\n"
+        "resize events, which contain a width and height:\n"
         "@{:type \"resize\" :w 640 :h 480}\n\n"
-        "and mouse events, which contain x and y co-ordinates:\n\n"
-        "@{:type \"mouse\" :x 20 :y 60}"
+        "and mouse events, which contain x and y co-ordinates:\n"
+        "@{:type \"mouse\" :x 20 :y 60 :mod \"motion\"}"
     },
     {"peek-event",  termbox_peek_event,
         "(peek-event timeout)\n\n"
