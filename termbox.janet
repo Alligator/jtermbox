@@ -31,3 +31,12 @@
                   (nil? (color-map kw)) (errorf "unknown color/attribute %v" kw)
                   (color-map kw)))
               kws)))
+
+(defn put-string
+  ``draw a string at x, y.
+  fg and bg default to (tb/color :default).``
+  [x y str &opt fg bg]
+  (default fg (color-map :default))
+  (default bg (color-map :default))
+  (loop [[idx chr] :pairs str]
+    (change-cell (+ x idx) y (string/from-bytes chr) fg bg)))

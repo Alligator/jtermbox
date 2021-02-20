@@ -1,9 +1,5 @@
 (import ../termbox :as tb)
 
-(defn draw-string [x y str]
-  (loop [[idx chr] :pairs str]
-    (tb/change-cell (+ x idx) y (string/from-bytes chr))))
-
 (defn clear-line [y]
   (loop [x :range [0 (tb/width)]]
     (tb/change-cell x y " ")))
@@ -20,10 +16,11 @@
   (tb/init)
   (tb/clear)
 
-  (tb/select-input-mode :mouse)
-  (draw-string 0 3 (string "current mode: " (tb/select-input-mode :current)))
+  (tb/put-string 0 0 "type to see events. ctrl-c to quit" (tb/color :yellow))
 
-  (draw-string 0 0 "type to see events. ctrl-c to quit")
+  (tb/select-input-mode :mouse)
+  (tb/put-string 0 3 (string "current mode: " (tb/select-input-mode :current)))
+
   (draw-colours 5 5)
   (tb/present)
 
@@ -31,14 +28,13 @@
     (def ev (tb/peek-event 500))
 
     (clear-line 2)
-    (draw-string 0 2 (string "time: " (os/time)))
+    (tb/put-string 0 2 (string "time: " (os/time)))
 
     (if-not (nil? ev)
       (do
         (clear-line 1)
-        (draw-string 0 1 (string/format "%j" ev))
+        (tb/put-string 0 1 (string/format "%j" ev) (tb/color :black) (tb/color :green))
         (draw-colours 5 5)
-
 
         (case (ev :type)
           "key" (case (ev :key)

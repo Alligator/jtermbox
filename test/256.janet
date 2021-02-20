@@ -4,9 +4,7 @@
   (tb/select-output-mode :256)
   (tb/init)
   (tb/clear)
-
-  (loop [[idx chr] :pairs "256 color test. press any key to quit"]
-    (tb/change-cell idx 0 (string/from-bytes chr)))
+  (tb/put-string 0 0 "256 color test. press any key to quit")
 
   (def width 40)
 

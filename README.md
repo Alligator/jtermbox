@@ -27,7 +27,7 @@ These are quite unfinished, but the basics are there.
   (tb/shutdown))
 ```
 
-It sticks pretty closely to the termbox API. `termbox/color` is provided to create colors.
+It sticks to the termbox API as much as possible, with keywords used in place of constants. Two extra utility functions are provided, `termbox/color` to create colors and `termbox/put-string` to draw strings.
 
 ## functions
 
@@ -47,6 +47,10 @@ It sticks pretty closely to the termbox API. `termbox/color` is provided to crea
 
 (termbox/change-cell x y ch &opt fg bg)
   change a cell in the internal bufffer at the specified position.
+  fg and bg default to (tb/color :default).
+  
+(termbox/put-string x y str &opt fg bg)
+  draw a string at x, y.
   fg and bg default to (tb/color :default).
 
 (termbox/color & kws)
