@@ -393,15 +393,16 @@ static const JanetReg cfuns[] = {
         "return the height of the terminal"
     },
     {"select-output-mode",      termbox_select_output_mode,
-        "(select-output-mode)\n\n"
+        "(select-output-mode kw)\n\n"
         "set the output mode.\n"
         "valid modes are :normal :256 :216 :grayscale and :current.\n"
         "when called with :current, will return the current mode as a keyword."
     },
     {"select-input-mode",      termbox_select_input_mode,
-        "(select-input-mode)\n\n"
+        "(select-input-mode & kws)\n\n"
         "set the input mode.\n"
         "valid modes are :current :esc :alt :mouse.\n"
+        "multiple modes are ORed together.\n"
         "when called with :current, will return the current mode as a keyword."
     },
     {NULL, NULL, NULL}
