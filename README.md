@@ -87,6 +87,11 @@ It sticks pretty closely to the termbox API. `termbox/color` is provided to crea
   set the output mode.
   valid modes are :normal :256 :216 :grayscale and :current.
   when called with :current, will return the current mode as a keyword.
+  
+(termbox/select-input-mode)
+  set the input mode.
+  valid modes are :current :esc :alt :mouse.
+  when called with :current, will return the current mode as a keyword.
 
 (termbox/set-cursor cx cy)
   set the position of the cursor. pass -1 for both cx and cy to hide the cursor.

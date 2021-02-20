@@ -20,6 +20,9 @@
   (tb/init)
   (tb/clear)
 
+  (tb/select-input-mode :mouse)
+  (draw-string 0 3 (string "current mode: " (tb/select-input-mode :current)))
+
   (draw-string 0 0 "type to see events. ctrl-c to quit")
   (draw-colours 5 5)
   (tb/present)

@@ -244,7 +244,7 @@ static Janet termbox_set_clear_attributes(int32_t argc, Janet *argv) {
     return janet_wrap_nil();
 }
 
-static int kw_to_tb_mode(JanetKeyword mode_kw) {
+static int kw_to_tb_output_mode(JanetKeyword mode_kw) {
     if (janet_cstrcmp(mode_kw, "normal") == 0) {
         return TB_OUTPUT_NORMAL;
     } else if (janet_cstrcmp(mode_kw, "256") == 0) {
@@ -256,11 +256,11 @@ static int kw_to_tb_mode(JanetKeyword mode_kw) {
     } else if (janet_cstrcmp(mode_kw, "current") == 0) {
         return TB_OUTPUT_CURRENT;
     } else {
-        janet_panicf("unrecognized mode %s, expected one of :normal :256 :216 :grayscale :current\n", mode_kw);
+        janet_panicf("unrecognized output mode %s, expected one of :normal :256 :216 :grayscale :current\n", mode_kw);
     }
 }
 
-static Janet kw_from_tb_mode(int mode) {
+static Janet kw_from_tb_output_mode(int mode) {
     switch (mode) {
         case TB_OUTPUT_NORMAL:
             return janet_ckeywordv("normal");
@@ -271,7 +271,7 @@ static Janet kw_from_tb_mode(int mode) {
         case TB_OUTPUT_GRAYSCALE:
             return janet_ckeywordv("grayscale");
         default:
-            return janet_wrap_nil();
+            return janet_wrap_integer(mode);
     }
 }
 
@@ -280,11 +280,59 @@ static Janet termbox_select_output_mode(int32_t argc, Janet *argv) {
     janet_fixarity(argc, 1);
     JanetKeyword mode_kw = janet_getkeyword(argv, 0);
 
-    int mode = kw_to_tb_mode(mode_kw);
+    int mode = kw_to_tb_output_mode(mode_kw);
     int result = tb_select_output_mode(mode);
 
     if (mode == TB_OUTPUT_CURRENT) {
-        return kw_from_tb_mode(result);
+        return kw_from_tb_output_mode(result);
+    }
+
+    return janet_wrap_nil();
+}
+
+static int kw_to_tb_input_mode(JanetKeyword mode_kw) {
+    if (janet_cstrcmp(mode_kw, "current") == 0) {
+        return TB_INPUT_CURRENT;
+    } else if (janet_cstrcmp(mode_kw, "esc") == 0) {
+        return TB_INPUT_ESC;
+    } else if (janet_cstrcmp(mode_kw, "alt") == 0) {
+        return TB_INPUT_ALT;
+    } else if (janet_cstrcmp(mode_kw, "mouse") == 0) {
+        return TB_INPUT_MOUSE;
+    } else {
+        janet_panicf("unrecognized input mode %s, expected one of :current :esc :alt :mouse\n", mode_kw);
+    }
+}
+
+static Janet kw_from_tb_input_mode(int mode) {
+    switch (mode) {
+        case TB_INPUT_CURRENT:
+            return janet_ckeywordv("current");
+        case TB_INPUT_ESC:
+            return janet_ckeywordv("esc");
+        case TB_INPUT_ALT:
+            return janet_ckeywordv("alt");
+        case TB_INPUT_MOUSE:
+            return janet_ckeywordv("mouse");
+        default:
+            return janet_wrap_integer(mode);
+    }
+}
+
+// int tb_select_input_mode(int mode);
+static Janet termbox_select_input_mode(int32_t argc, Janet *argv) {
+    janet_arity(argc, 1, -1);
+
+    int mode = 0;
+    for (int i = 0; i < argc; i++) {
+        JanetKeyword mode_kw = janet_getkeyword(argv, i);
+        mode |= kw_to_tb_input_mode(mode_kw);
+    }
+
+    int result = tb_select_input_mode(mode);
+
+    if (mode == TB_INPUT_CURRENT) {
+        return kw_from_tb_input_mode(result);
     }
 
     return janet_wrap_nil();
@@ -345,9 +393,15 @@ static const JanetReg cfuns[] = {
         "return the height of the terminal"
     },
     {"select-output-mode",      termbox_select_output_mode,
-        "(selet-output-mode)\n\n"
+        "(select-output-mode)\n\n"
         "set the output mode.\n"
         "valid modes are :normal :256 :216 :grayscale and :current.\n"
+        "when called with :current, will return the current mode as a keyword."
+    },
+    {"select-input-mode",      termbox_select_input_mode,
+        "(select-input-mode)\n\n"
+        "set the input mode.\n"
+        "valid modes are :current :esc :alt :mouse.\n"
         "when called with :current, will return the current mode as a keyword."
     },
     {NULL, NULL, NULL}
