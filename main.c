@@ -173,14 +173,7 @@ static Janet termbox_change_cell(int32_t argc, Janet *argv) {
     return janet_wrap_nil();
 }
 
-// int tb_poll_event(struct tb_event *event);
-static Janet termbox_poll_event(int32_t argc, Janet *argv) {
-    (void) argv;
-    janet_fixarity(argc, 0);
-
-    struct tb_event ev;
-    tb_poll_event(&ev);
-
+static Janet create_tb_event_struct(struct tb_event ev) {
     JanetKV *jt = janet_struct_begin(3);
     Janet type;
     switch (ev.type) {
@@ -210,6 +203,32 @@ static Janet termbox_poll_event(int32_t argc, Janet *argv) {
     janet_struct_put(jt, janet_ckeywordv("type"), type);
 
     return janet_wrap_struct(janet_struct_end(jt));
+}
+
+// int tb_poll_event(struct tb_event *event);
+static Janet termbox_poll_event(int32_t argc, Janet *argv) {
+    (void) argv;
+    janet_fixarity(argc, 0);
+
+    struct tb_event ev;
+    tb_poll_event(&ev);
+    return create_tb_event_struct(ev);
+}
+
+// int tb_peek_event(struct tb_event *event, int timeout);
+static Janet termbox_peek_event(int32_t argc, Janet *argv) {
+    janet_fixarity(argc, 1);
+    int32_t timeout = janet_getinteger(argv, 0);
+
+    struct tb_event ev;
+    int result = tb_peek_event(&ev, timeout);
+    if (result == -1) {
+        janet_panicf("tb_peek_event returned -1");
+    } else if (result == 0) {
+        return janet_wrap_nil();
+    }
+
+    return create_tb_event_struct(ev);
 }
 
 // void tb_set_cursor(int cx, int cy);
@@ -379,6 +398,12 @@ static const JanetReg cfuns[] = {
         "@{:type \"resize\" :w 640 :h 480}\n\n"
         "and mouse events, which contain x and y co-ordinates:\n\n"
         "@{:type \"mouse\" :x 20 :y 60}"
+    },
+    {"peek-event",  termbox_peek_event,
+        "(peek-event timeout)\n\n"
+        "wait for an event up to timeout milliseconds.\n"
+        "returns the event, or nil if no event happened before the timeout.\n\n"
+        "see poll-event for info on the returned value."
     },
     {"set-cursor",  termbox_set_cursor,
         "(set-cursor cx cy)\n\n"

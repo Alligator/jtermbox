@@ -28,15 +28,21 @@
   (tb/present)
 
   (while true
-    (def ev (tb/poll-event))
+    (def ev (tb/peek-event 500))
 
-    (clear-line 1)
-    (draw-string 0 1 (string/format "%j" ev))
-    (draw-colours 5 5)
+    (clear-line 2)
+    (draw-string 0 2 (string "time: " (os/time)))
 
-    (case (ev :type)
-      "key" (case (ev :key)
-              "ctrl-c" (break)))
+    (if-not (nil? ev)
+      (do
+        (clear-line 1)
+        (draw-string 0 1 (string/format "%j" ev))
+        (draw-colours 5 5)
+
+
+        (case (ev :type)
+          "key" (case (ev :key)
+                  "ctrl-c" (break)))))
     (tb/present))
 
   (tb/shutdown))

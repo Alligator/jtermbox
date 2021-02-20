@@ -71,17 +71,21 @@ It sticks pretty closely to the termbox API. `termbox/color` is provided to crea
   wait for an event and return it.
   
   there are three types of event.
-  key events, which contain either a character or a key name:
   
+  key events, which contain either a character or a key name:
   @{:type "key" :ch "a" :key "arrow-down"}
   
   resize events, which contain a width and height:
-  
   @{:type "resize" :w 640 :h 480}
   
   and mouse events, which contain x and y co-ordinates:
-  
   @{:type "mouse" :x 20 :y 60}
+  
+(termbox/peek-event timeout)
+  wait for an event up to timeout milliseconds.
+  returns the event, or nil if no event happened before the timeout.
+  
+  see poll-event for info on the returned value.
 
 (termbox/selet-output-mode)
   set the output mode.
