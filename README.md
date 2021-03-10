@@ -1,6 +1,6 @@
 # termbox janet bindings
 
-These are essentially complete, `tb_put_cell` and `tb_blit` are the only uninplemented termbox functions.
+These are essentially complete, `tb_put_cell` and `tb_blit` are the only unimplemented termbox functions.
 
 ```clojure
 (import jtermbox :as tb)
