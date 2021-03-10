@@ -1,7 +1,7 @@
 # this program prints itself using termbox, with dodgy syntax highlighting
 # up/down arrows to scroll
 # any other key to quit
-(import ../termbox :as tb)
+(import ../jtermbox :as tb)
 
 (defn draw-src [src yoffset]
   (var x 0)

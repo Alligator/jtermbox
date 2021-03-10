@@ -1,4 +1,4 @@
-(import _termbox :prefix "" :export true)
+(import _jtermbox :prefix "" :export true)
 
 (def- color-map
   @{:default    0

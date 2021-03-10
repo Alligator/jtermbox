@@ -1,4 +1,4 @@
-(import termbox :as tb)
+(import jtermbox :as tb)
 
 (defn main [& args]
   (tb/select-output-mode :256)

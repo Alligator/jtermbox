@@ -1,4 +1,4 @@
-(import ../termbox :as tb)
+(import jtermbox :as tb)
 
 (defn clear-line [y]
   (loop [x :range [0 (tb/width)]]
