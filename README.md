@@ -5,20 +5,16 @@ These are essentially complete, `tb_put_cell` and `tb_blit` are the only unimple
 ```clojure
 (import jtermbox :as tb)
 
-(defn draw-string [x y str]
-  (loop [[idx chr] :pairs str]
-    (tb/change-cell (+ x idx) y (string/from-bytes chr))))
-
 (defn main [& args]
   (tb/init)
   (tb/clear)
 
-  (draw-string 0 0 "type to see events. ctrl-c to quit")
+  (tb/put-string 0 0 "type to see events. ctrl-c to quit")
   (tb/present)
 
   (while true
     (def ev (tb/poll-event))
-    (draw-string 0 1 (string/format "%j" ev))
+    (tb/put-string 0 1 (string/format "%j" ev))
     (case (ev :type)
       "key" (case (ev :key)
               "ctrl-c" (break)))
