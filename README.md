@@ -86,7 +86,7 @@ It sticks to the termbox API as much as possible, with keywords used in place of
   
   see poll-event for info on the returned value.
 
-(selet-output-mode)
+(select-output-mode)
   set the output mode.
   valid modes are :normal :256 :216 :grayscale and :current.
   when called with :current, will return the current mode as a keyword.
